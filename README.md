@@ -50,6 +50,7 @@ Microsoft cloud tool. Here is exactly what each one maps to:
 | 9 | Who-did-what saved to a file | `audit_log.txt` | **Azure Monitor / Entra Audit Logs** |
 | 10 | Problems saved as tickets | `tickets/` | **ServiceNow / Jira** (help desk) |
 | 11 | Admin resolves a ticket | `resolve_ticket()` | **ServiceNow / Jira** "Resolve" button |
+| 12 | Ticket auto-checked, else a human reviews | `verify_ticket()` | **ServiceNow / Jira** triage automation + human review |
 
 > **The IDEA is identical. Only the SIZE and the REAL TOOLS differ.**
 > Local = a free practice "dollhouse." Cloud = the giant live version a company pays for.
@@ -69,6 +70,7 @@ The menu (after you log in) has two ticket actions:
 
 * **`2) File a support ticket`** — a lawyer reports a problem. It's saved as
   `tickets/ticket_<timestamp>.txt`. → *like opening a ticket in ServiceNow / Jira.*
+  Before saving, the ticket is **auto-verified** (see below).
 * **`3) Resolve a support ticket (admin)`** — you, the admin, pick an open ticket
   from the list, type how you fixed it, and the app:
   1. adds a **resolution note** (status, who, when, fix) to the ticket,
@@ -79,6 +81,31 @@ The menu (after you log in) has two ticket actions:
 
 > Note: in this demo any logged-in user can resolve tickets (there's no separate
 > admin login). In a real system, RBAC would restrict this to admins only.
+
+---
+
+## ✅ Ticket verification (auto-check, else a human reviews)
+
+Every new ticket runs through an automatic completeness check (`verify_ticket()`)
+**before** it's saved — so good tickets pass on their own and only the unclear
+ones bother a person:
+
+* **Complete ticket** (enough detail) → marked **`AUTO-VERIFIED`**. Good to go,
+  no human needed.
+* **Incomplete ticket** (empty, or too short to act on) → marked
+  **`NEEDS HUMAN REVIEW`** and **flagged with a ⚠** in the admin's resolve list,
+  so the human knows exactly which tickets to check.
+
+The verification result is written into the ticket file and recorded in
+`logs/audit_log.txt`. → *like a ServiceNow / Jira automation rule that triages
+incoming tickets and escalates the unclear ones to a person.*
+
+Example of a flagged ticket in the admin list:
+
+```
+   Open tickets:   (⚠ = flagged for human review)
+     1) ⚠ ticket_20260626030303.txt  ->  Problem: broken
+```
 
 ---
 
