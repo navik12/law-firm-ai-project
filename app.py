@@ -16,7 +16,7 @@ which real cloud tool each part stands in for.
   access.json                -->   Azure RBAC (role-based access)
   cases/ folders             -->   SharePoint / iManage (document storage)
   the access check below     -->   ETHICAL WALLS (case isolation)
-  call_ai()                  -->   Claude / Microsoft Copilot (the AI brain)
+  call_ai()                  -->   OpenAI GPT / Azure OpenAI (the AI brain)
   logs/audit_log.txt         -->   Azure Monitor / Entra Audit Logs
   reports/cost_report.txt    -->   Azure Cost Management
   tickets/                   -->   ServiceNow / Jira (help desk)
@@ -124,7 +124,7 @@ def read_case_documents(case):
 # ----------------------------------------------------------------------------
 # PHASE 5 & 6 — THE AI BRAIN
 # LOCAL: calls OpenAI's API (your key). If no key, runs a safe offline demo.
-# REAL CLOUD: this would be Claude or Microsoft Copilot.
+# REAL CLOUD: this would be OpenAI GPT or Azure OpenAI.
 # ----------------------------------------------------------------------------
 def call_ai(question, case_documents):
     api_key = os.environ.get("OPENAI_API_KEY")
@@ -301,7 +301,7 @@ def main():
 
         if choice == "1":
             question = input("\nYour question for the AI: ").strip()
-            print("\n... asking the AI (Claude/Copilot in real life) ...")
+            print("\n... asking the AI (OpenAI GPT in real life) ...")
             answer = call_ai(question, documents)
             print("\n=== AI ANSWER ===")
             print(answer)
