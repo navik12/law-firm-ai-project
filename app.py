@@ -180,6 +180,59 @@ def file_ticket(user, message):
 
 
 # ----------------------------------------------------------------------------
+# PHASE 10 — RESOLVE A SUPPORT TICKET  (admin action)
+# LOCAL: mark the ticket file resolved and rename it.
+# REAL CLOUD: an admin clicks "Resolve" in ServiceNow / Jira.
+# ----------------------------------------------------------------------------
+def list_open_tickets():
+    folder = os.path.join(HERE, "tickets")
+    # "Open" = starts with ticket_ ; resolved ones are renamed RESOLVED_ticket_
+    return sorted(f for f in os.listdir(folder) if f.startswith("ticket_"))
+
+
+def resolve_ticket(user):
+    open_tickets = list_open_tickets()
+    if not open_tickets:
+        print("   No open tickets to resolve. (Inbox is clear!)")
+        return
+
+    print("\n   Open tickets:")
+    for i, filename in enumerate(open_tickets, start=1):
+        with open(os.path.join(HERE, "tickets", filename)) as f:
+            lines = f.read().splitlines()
+        # show the 'Problem:' line so the admin knows what each ticket is about
+        problem = next((ln for ln in lines if ln.startswith("Problem:")), "Problem: (none)")
+        print(f"     {i}) {filename}  ->  {problem}")
+
+    pick = input("Which ticket number do you want to resolve? ").strip()
+    if not pick.isdigit() or not (1 <= int(pick) <= len(open_tickets)):
+        print("X  That is not a valid ticket number.")
+        return
+
+    filename = open_tickets[int(pick) - 1]
+    resolution = input("Describe how you resolved it: ").strip()
+
+    # 1) append a resolution note to the ticket file
+    old_path = os.path.join(HERE, "tickets", filename)
+    with open(old_path, "a") as f:
+        f.write(
+            f"Status: RESOLVED\n"
+            f"Resolved by: {user}\n"
+            f"Resolved at: {now()}\n"
+            f"Resolution: {resolution}\n"
+        )
+
+    # 2) rename so it is clearly closed (RESOLVED_ticket_...)
+    new_path = os.path.join(HERE, "tickets", f"RESOLVED_{filename}")
+    os.rename(old_path, new_path)
+
+    # 3) record it in the audit trail (Azure Monitor / Entra Audit Logs)
+    ticket_id = filename.replace("ticket_", "").replace(".txt", "")
+    audit(user, "TICKET_RESOLVED", f"id={ticket_id}")
+    print(f"OK  Ticket resolved: tickets/RESOLVED_{filename}")
+
+
+# ----------------------------------------------------------------------------
 # MAIN PROGRAM
 # ----------------------------------------------------------------------------
 def main():
@@ -204,8 +257,9 @@ def main():
         print("\n--- What do you want to do? ---")
         print("  1) Ask the AI a question about YOUR case")
         print("  2) File a support ticket")
-        print("  3) Log out")
-        choice = input("Choose 1 / 2 / 3: ").strip()
+        print("  3) Resolve a support ticket (admin)")
+        print("  4) Log out")
+        choice = input("Choose 1 / 2 / 3 / 4: ").strip()
 
         if choice == "1":
             question = input("\nYour question for the AI: ").strip()
@@ -222,12 +276,15 @@ def main():
             file_ticket(user["username"], msg)
 
         elif choice == "3":
+            resolve_ticket(user["username"])
+
+        elif choice == "4":
             audit(user["username"], "LOGOUT", "user logged out")
             print("Goodbye!")
             break
 
         else:
-            print("Please type 1, 2, or 3.")
+            print("Please type 1, 2, 3, or 4.")
 
 
 if __name__ == "__main__":
