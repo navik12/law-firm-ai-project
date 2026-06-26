@@ -44,7 +44,7 @@ Microsoft cloud tool. Here is exactly what each one maps to:
 | 3 | Group decides your access | `access.json` | **Azure RBAC** (role assignments) |
 | 4 | You can only open your case | the access check | **Ethical walls** (SharePoint permissions) |
 | 5 | Secret case files in folders | `cases/` | **SharePoint / iManage** (document system) |
-| 6 | The AI answers questions | `call_ai()` (OpenAI) | **Claude / Microsoft Copilot** |
+| 6 | The AI answers questions | `call_ai()` (OpenAI) | **OpenAI GPT (gpt-4o-mini) / Azure OpenAI** |
 | 7 | Connect AI to documents | code passes docs in | **APIs + Power Automate connectors** |
 | 8 | Cost saved to a file | `cost_report.txt` | **Azure Cost Management** (dashboard) |
 | 9 | Who-did-what saved to a file | `audit_log.txt` | **Azure Monitor / Entra Audit Logs** |
