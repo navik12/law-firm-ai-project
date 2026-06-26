@@ -166,17 +166,52 @@ def call_ai(question, case_documents):
 
 
 # ----------------------------------------------------------------------------
-# PHASE 9 — SUPPORT TICKETS
-# LOCAL: save a ticket file.
-# REAL CLOUD: ServiceNow / Jira.
+# PHASE 9 — SUPPORT TICKETS  (+ auto-verification / human review)
+# LOCAL: save a ticket file, after an automatic completeness check.
+# REAL CLOUD: ServiceNow / Jira (with an automation rule that triages tickets).
 # ----------------------------------------------------------------------------
+def verify_ticket(message):
+    """Automatic check: does the ticket have everything we need?
+
+    Returns (is_complete, reason).
+    If complete  -> the ticket is auto-verified (good to go).
+    If NOT       -> it gets flagged for a HUMAN (the admin) to review.
+    """
+    if not message:
+        return False, "the description is empty"
+    if len(message.split()) < 3:
+        return False, "the description is too short — not enough detail"
+    return True, "all required details are present"
+
+
 def file_ticket(user, message):
     ticket_id = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
     path = os.path.join(HERE, "tickets", f"ticket_{ticket_id}.txt")
+
+    # STEP A — automatic verification
+    is_complete, reason = verify_ticket(message)
+    if is_complete:
+        status = "AUTO-VERIFIED (complete)"
+    else:
+        status = "NEEDS HUMAN REVIEW (incomplete)"
+
     with open(path, "w") as f:
-        f.write(f"Ticket from: {user}\nTime: {now()}\nProblem: {message}\n")
-    audit(user, "TICKET_CREATED", f"id={ticket_id}")
-    print(f"OK  Ticket created: tickets/ticket_{ticket_id}.txt (goes to the admin = YOU)")
+        f.write(
+            f"Ticket from: {user}\n"
+            f"Time: {now()}\n"
+            f"Problem: {message}\n"
+            f"Verification: {status} — {reason}\n"
+        )
+    audit(user, "TICKET_CREATED",
+          f"id={ticket_id} | verification={'pass' if is_complete else 'needs_review'}")
+
+    # STEP B — tell the user what happened
+    if is_complete:
+        print(f"OK  Ticket auto-verified — {reason}.")
+    else:
+        print(f"!!  Ticket INCOMPLETE — {reason}.")
+        print("    It has been flagged for a HUMAN (the admin) to review.")
+    print(f"    Saved: tickets/ticket_{ticket_id}.txt")
 
 
 # ----------------------------------------------------------------------------
@@ -196,13 +231,16 @@ def resolve_ticket(user):
         print("   No open tickets to resolve. (Inbox is clear!)")
         return
 
-    print("\n   Open tickets:")
+    print("\n   Open tickets:   (⚠ = flagged for human review)")
     for i, filename in enumerate(open_tickets, start=1):
         with open(os.path.join(HERE, "tickets", filename)) as f:
             lines = f.read().splitlines()
         # show the 'Problem:' line so the admin knows what each ticket is about
         problem = next((ln for ln in lines if ln.startswith("Problem:")), "Problem: (none)")
-        print(f"     {i}) {filename}  ->  {problem}")
+        # flag the ones the auto-check could not verify
+        verification = next((ln for ln in lines if ln.startswith("Verification:")), "")
+        flag = "⚠ " if "NEEDS HUMAN REVIEW" in verification else "  "
+        print(f"     {i}) {flag}{filename}  ->  {problem}")
 
     pick = input("Which ticket number do you want to resolve? ").strip()
     if not pick.isdigit() or not (1 <= int(pick) <= len(open_tickets)):
