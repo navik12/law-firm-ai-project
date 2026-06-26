@@ -49,6 +49,7 @@ Microsoft cloud tool. Here is exactly what each one maps to:
 | 8 | Cost saved to a file | `cost_report.txt` | **Azure Cost Management** (dashboard) |
 | 9 | Who-did-what saved to a file | `audit_log.txt` | **Azure Monitor / Entra Audit Logs** |
 | 10 | Problems saved as tickets | `tickets/` | **ServiceNow / Jira** (help desk) |
+| 11 | Admin resolves a ticket | `resolve_ticket()` | **ServiceNow / Jira** "Resolve" button |
 
 > **The IDEA is identical. Only the SIZE and the REAL TOOLS differ.**
 > Local = a free practice "dollhouse." Cloud = the giant live version a company pays for.
@@ -59,6 +60,25 @@ Microsoft cloud tool. Here is exactly what each one maps to:
 
 Run `python3 prove_wall.py` — it tries to let Sarah peek at the Tobacco case and
 shows that the system **blocks** her. That's the wall doing its job.
+
+---
+
+## 🎫 Filing and resolving support tickets
+
+The menu (after you log in) has two ticket actions:
+
+* **`2) File a support ticket`** — a lawyer reports a problem. It's saved as
+  `tickets/ticket_<timestamp>.txt`. → *like opening a ticket in ServiceNow / Jira.*
+* **`3) Resolve a support ticket (admin)`** — you, the admin, pick an open ticket
+  from the list, type how you fixed it, and the app:
+  1. adds a **resolution note** (status, who, when, fix) to the ticket,
+  2. renames it to `RESOLVED_ticket_<timestamp>.txt` so it's clearly closed, and
+  3. records a `TICKET_RESOLVED` line in `logs/audit_log.txt`.
+
+  → *like clicking "Resolve" in ServiceNow / Jira.*
+
+> Note: in this demo any logged-in user can resolve tickets (there's no separate
+> admin login). In a real system, RBAC would restrict this to admins only.
 
 ---
 
