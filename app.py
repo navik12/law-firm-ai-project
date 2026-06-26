@@ -44,6 +44,28 @@ def now():
     return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
 
+def load_env_file():
+    """Load KEY=VALUE lines from a local, hidden .env file into the environment.
+
+    LOCAL: a .env file you keep on your Mac (it is gitignored — never shared).
+    REAL CLOUD: Azure Key Vault / Managed Identity (secrets, never in code).
+
+    A real environment variable always wins, so 'export OPENAI_API_KEY=...'
+    still overrides whatever is in the .env file.
+    """
+    path = os.path.join(HERE, ".env")
+    if not os.path.exists(path):
+        return
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            value = value.strip().strip('"').strip("'")
+            os.environ.setdefault(key.strip(), value)
+
+
 # ----------------------------------------------------------------------------
 # PHASE 8 — AUDIT LOGGING
 # LOCAL: we write a line to a text file.
@@ -274,6 +296,8 @@ def resolve_ticket(user):
 # MAIN PROGRAM
 # ----------------------------------------------------------------------------
 def main():
+    load_env_file()  # read the hidden .env so OPENAI_API_KEY is available
+
     print("=" * 70)
     print("  LAW FIRM AI PLATFORM  (local practice project)")
     print("  You are the AI Systems Administrator. 3 lawyers use this safely.")
