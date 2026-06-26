@@ -1,0 +1,12 @@
+CONFIDENTIAL — MANUFACTURING CASE (Machine Maker Defense)
+
+Client: BuildRight Inc. (maker of the "X200 industrial press")
+Lawsuit: A worker says the X200 machine crushed his hand.
+
+Internal design facts our side relies on:
+1. The X200 has TWO safety guards and an emergency stop button.
+2. Inspection records show the safety guard was REMOVED by the worker's factory.
+3. The user manual clearly says "never operate with guards removed."
+4. The machine passed all safety certifications in 2021.
+
+Defense strategy: Show the factory removed the safety guard, against our instructions.

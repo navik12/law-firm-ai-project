@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets — never commit API keys
+.env
+*.key
+
+# Runtime output (regenerated each run) — keep the folders, ignore the files
+logs/*
+reports/*
+tickets/*
+!logs/.gitkeep
+!reports/.gitkeep
+!tickets/.gitkeep

@@ -1,0 +1,26 @@
+{
+  "_comment": "This file PRETENDS to be Microsoft Entra ID (the login/identity system). In the REAL cloud, these users would live in Entra ID, not in a file.",
+  "users": [
+    {
+      "username": "sarah",
+      "full_name": "Sarah (Medical Defense Lawyer)",
+      "password": "demo123",
+      "mfa_code": "111111",
+      "group": "Medical-Case-Team"
+    },
+    {
+      "username": "david",
+      "full_name": "David (Manufacturing Defense Lawyer)",
+      "password": "demo123",
+      "mfa_code": "222222",
+      "group": "Manufacturing-Case-Team"
+    },
+    {
+      "username": "maria",
+      "full_name": "Maria (Tobacco Defense Lawyer)",
+      "password": "demo123",
+      "mfa_code": "333333",
+      "group": "Tobacco-Case-Team"
+    }
+  ]
+}

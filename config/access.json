@@ -1,0 +1,8 @@
+{
+  "_comment": "This file PRETENDS to be Azure RBAC (Role-Based Access Control). It builds the ETHICAL WALLS: each group can open ONLY its own case folder. In the REAL cloud, this would be Azure role assignments + SharePoint site permissions.",
+  "access_rules": {
+    "Medical-Case-Team": "medical",
+    "Manufacturing-Case-Team": "manufacturing",
+    "Tobacco-Case-Team": "tobacco"
+  }
+}
