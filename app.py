@@ -180,7 +180,9 @@ def call_ai(question, case_documents):
         },
     )
     try:
-        with urllib.request.urlopen(req) as resp:
+        # timeout=30 so a stalled network gives up with an error instead of
+        # hanging forever waiting for OpenAI to reply.
+        with urllib.request.urlopen(req, timeout=30) as resp:
             data = json.loads(resp.read())
             return data["choices"][0]["message"]["content"]
     except Exception as e:
