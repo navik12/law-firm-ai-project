@@ -1,0 +1,7 @@
+Ticket from: david
+Time: 2026-06-26 02:53:37 UTC
+Problem: VPN keeps disconnecting during calls
+Status: RESOLVED
+Resolved by: david
+Resolved at: 2026-06-26 02:53:37 UTC
+Resolution: Updated the VPN client to the latest version; connection is now stable
