@@ -1,0 +1,7 @@
+Ticket from: sarah
+Time: 2026-06-26 03:00:00 UTC
+Problem: AI keeps timing out on large medical reports - need a higher request limit
+Status: RESOLVED
+Resolved by: sarah
+Resolved at: 2026-06-26 02:59:57 UTC
+Resolution: Raised the API request limit for the medical case; large reports now process fine
